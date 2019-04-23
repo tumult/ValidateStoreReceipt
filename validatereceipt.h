@@ -33,6 +33,8 @@ extern NSString *kReceiptVersion;
 extern NSString *kReceiptOpaqueValue;
 extern NSString *kReceiptHash;
 extern NSString *kReceiptInApp;
+extern NSString *kReceiptOriginalPurchaseDate;
+extern NSString *kReceiptOriginalVersion;
 
 extern NSString *kReceiptInAppQuantity;
 extern NSString *kReceiptInAppProductIdentifier;

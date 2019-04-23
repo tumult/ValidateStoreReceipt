@@ -70,6 +70,9 @@ NSString *kReceiptVersion						= @"Version";
 NSString *kReceiptOpaqueValue					= @"OpaqueValue";
 NSString *kReceiptHash							= @"Hash";
 NSString *kReceiptInApp							= @"InApp";
+NSString *kReceiptOriginalPurchaseDate			= @"OriginalPurchaseDate";
+NSString *kReceiptOriginalVersion				= @"OriginalVersion";
+
 
 NSString *kReceiptInAppQuantity					= @"Quantity";
 NSString *kReceiptInAppProductIdentifier		= @"ProductIdentifier";
@@ -332,7 +335,9 @@ NSDictionary * dictionaryWithAppStoreReceipt(NSString * path)
 #define VERSION 3
 #define OPAQUE_VALUE 4
 #define HASH 5
-#define ATTR_END 6
+#define ATTR_END 20
+#define ORIGINAL_PURCHASE_DATE 18
+#define ORIGINAL_APPLICATION_VERSION 19
 #define INAPP_PURCHASE 17
 
 	ERR_load_PKCS7_strings();
@@ -478,11 +483,12 @@ NSDictionary * dictionaryWithAppStoreReceipt(NSString * path)
 				}
 
 				// Strings
-				if (attr_type == BUNDLE_ID || attr_type == VERSION) {
+				if (attr_type == BUNDLE_ID || attr_type == VERSION || attr_type == ORIGINAL_PURCHASE_DATE || attr_type == ORIGINAL_APPLICATION_VERSION) {
 					int str_type = 0;
 					long str_length = 0;
 					const uint8_t *str_p = p;
 					ASN1_get_object(&str_p, &str_length, &str_type, &xclass, seq_end - str_p);
+
 					if (str_type == V_ASN1_UTF8STRING) {
 						switch (attr_type) {
 							case BUNDLE_ID:
@@ -490,6 +496,9 @@ NSDictionary * dictionaryWithAppStoreReceipt(NSString * path)
 								break;
 							case VERSION:
 								key = kReceiptVersion;
+								break;
+							case ORIGINAL_APPLICATION_VERSION:
+								key = kReceiptOriginalVersion;
 								break;
 						}
                         
@@ -501,6 +510,22 @@ NSDictionary * dictionaryWithAppStoreReceipt(NSString * path)
                             [string release];
 						}
 					}
+					if (str_type == V_ASN1_IA5STRING) {
+						switch (attr_type) {
+							case ORIGINAL_PURCHASE_DATE:
+								key = kReceiptOriginalPurchaseDate;
+								break;
+						}
+						
+						if (key) {
+							NSString *string = [[NSString alloc] initWithBytes:str_p
+																		length:(NSUInteger)str_length
+																	  encoding:NSASCIIStringEncoding];
+							[info setObject:string forKey:key];
+							[string release];
+						}
+					}
+
 				}
 				
 				// In-App purchases
