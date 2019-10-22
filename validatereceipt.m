@@ -190,7 +190,7 @@ NSArray * parseInAppPurchasesData(NSData * inappData)
 			const uint8_t *seq_end = p + length;
 			
 			int attr_type = 0;
-			int attr_version = 0;
+//			int attr_version = 0;
 			
 			// Attribute type
 			ASN1_get_object(&p, &length, &type, &xclass, seq_end - p);
@@ -207,11 +207,11 @@ NSArray * parseInAppPurchasesData(NSData * inappData)
 			
 			// Attribute version
 			ASN1_get_object(&p, &length, &type, &xclass, seq_end - p);
-			if (type == V_ASN1_INTEGER && length == 1) {
-                // clang analyser hit (wontfix at the moment, since the code might come in handy later)
-                // But if someone has a convincing case throwing that out, I might do so, Roddi
-				attr_version = p[0];
-			}
+//			if (type == V_ASN1_INTEGER && length == 1) {
+//                // clang analyser hit (wontfix at the moment, since the code might come in handy later)
+//                // But if someone has a convincing case throwing that out, I might do so, Roddi
+//				attr_version = p[0];
+//			}
 			p += length;
 			
 			// Only parse attributes we're interested in
@@ -657,11 +657,7 @@ BOOL validateReceiptAtPath(NSString * path)
 	NSData * guidData = nil;
 #ifndef USE_SAMPLE_RECEIPT
 	guidData = (NSData*)copy_mac_address();
-
-	if ([NSGarbageCollector defaultCollector])
-		[[NSGarbageCollector defaultCollector] enableCollectorForPointer:guidData];
-	else
-		[guidData autorelease];
+	[guidData autorelease];
 
 	if (!guidData)
 		return NO;
