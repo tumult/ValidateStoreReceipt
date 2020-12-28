@@ -328,7 +328,13 @@ NSArray * parseInAppPurchasesData(NSData * inappData)
 
 NSDictionary * dictionaryWithAppStoreReceipt(NSString * path)
 {
+#if 1
 	NSData * rootCertData = appleRootCert();
+#else
+	#pragma message("Using StoreKitTestCertificate; change back before committing")
+	// for testing with store kit
+	NSData *rootCertData = [NSData dataWithContentsOfFile:@"/Users/deutschj/Desktop/StoreKitTestCertificate.cer"];
+#endif
 
 #define ATTR_START 1
 #define BUNDLE_ID 2
